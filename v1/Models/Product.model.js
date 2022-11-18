@@ -14,6 +14,7 @@ const productSchema = mongoose.Schema({
         type: String,
         required: [true, "Please Provide a Name for this Product."],
         trim: true,
+        lowercase: true,
         unique: [true, "Name must be unique."],
         minlength: [3, "Name Must be at least 3 Charecters."],
         maxlength: [100, "Name is too large."],
@@ -23,44 +24,34 @@ const productSchema = mongoose.Schema({
         type: String,
         required: [true, "Please Provide a Description for this Product."],
     },
-    price: {
-        type: Number,
-        required: [true, "Please Provide a Price for this Product."],
-        min: [0, "Price Can't be Negative."],
-    },
     unit: {
         type: String,
         required: [true],
         enum: {
-            values: ["kg", "litre", "pcs"],
-            message: "Unit value Can't be {VALUE}, must be kg/litre/pcs."
+            values: ["kg", "litre", "pcs", "bag"],
+            message: "Unit value Can't be {VALUE}, must be kg/litre/pcs/bag."
         },
     },
-    quantity: {
-        type: Number,
-        required: true,
-        min: [0, "Quantity Can't be Negative."],
+    imageURLs: {
+        type: String,
+        required: rtue,
         validate: {
             validator: (value) => {
-                const isInteger = Number.isInteger(value);
-                if (isInteger) {
-                    return true;
-                } else {
-                    return false;
-                }
+                if (!Array.isArray(value)) {
+                    return false
+                };
+                let isValid = true;
+                value.forEach(url => {
+                    if (!validator.isURL(url)) {
+                        isValid = false
+                    }
+                });
+                return isValid;
             },
-            message: "Quantity must be an Integer."
+            message: "Please Provide a Valid Image URL"
         }
-    },
-    status: {
-        type: String,
-        enum: {
-            values: ["in-stock", "out-of-stock", "discontinued"],
-            message: "Status Can't be {VALUE}, must be in-stock/out-of-stock/discontinued."
-        },
-        required: true
+    }
 
-    },
     // createdAt: {
     //     type: Date,
     //     default: Date.now,
