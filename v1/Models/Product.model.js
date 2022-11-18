@@ -32,7 +32,7 @@ const productSchema = mongoose.Schema({
             message: "Unit value Can't be {VALUE}, must be kg/litre/pcs/bag."
         },
     },
-    imageURLs: {
+    imageURLs: [{
         type: String,
         required: rtue,
         validate: {
@@ -49,6 +49,21 @@ const productSchema = mongoose.Schema({
                 return isValid;
             },
             message: "Please Provide a Valid Image URL"
+        }
+    }],
+    category: {
+        type: String,
+        required: true
+    },
+    brand: {
+        name: {
+            type: String,
+            required: true
+        },
+        id: {
+            type: ObjectId,
+            ref: 'Brand',
+            required: true
         }
     }
 
@@ -92,12 +107,6 @@ productSchema.pre('save', function (next) {
 
     next();
 });
-
-// productSchema.post('save', function (doc, next) {
-//     console.log("After Saving Data");
-
-//     next();
-// });
 
 productSchema.methods.logger = function () {
     console.log(`Data Saved for ${this.name}`);
