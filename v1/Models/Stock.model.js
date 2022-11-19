@@ -11,7 +11,12 @@ const { ObjectId } = mongoose.Schema.Types;
 
 
 // Schema Design
-const productSchema = mongoose.Schema({
+const stockSchema = mongoose.Schema({
+    ProductId: {
+        type: ObjectId,
+        required: true,
+        ref: 'Product'
+    },
     name: {
         type: String,
         required: [true, "Please Provide a Name for this Product."],
@@ -53,6 +58,16 @@ const productSchema = mongoose.Schema({
             message: "Please Provide a Valid Image URL"
         }
     }],
+    price: {
+        type: Number,
+        required: true,
+        min: [0, "Product Price Can't be Negative"]
+    },
+    quantity: {
+        type: Number,
+        required: true,
+        min: [0, "Product Quantity Can't be Negative"]
+    },
     category: {
         type: String,
         required: true
@@ -67,32 +82,44 @@ const productSchema = mongoose.Schema({
             ref: 'Brand',
             required: true
         }
+    },
+    stock: {
+        type: String,
+        requird: true,
+        enum: {
+            values: ['in-stock', 'out-of-stock', 'discontinued'],
+            message: "Status Can't be {VALUE}"
+        }
+    },
+    store: {
+        name: {
+            type: String,
+            trim: true,
+            lowercase: true,
+            required: [true, 'Please Provide a Store Name'],
+            enum: {
+                values: ['Dhaka', 'Chittagong', 'Sylhet', 'Khulna', 'Barishal', 'Mymensingh', 'Rajshahi', 'Rangpur'],
+                message: "{VALUE} is not a valid name"
+            }
+        },
+        id: {
+            type: ObjectId,
+            requird: true,
+            ref: "Store"
+        }
+    },
+    suppiredBy: {
+        name: {
+            type: String,
+            trim: true,
+            required: [true, 'Please Provide a Supplier Name'],
+        },
+        id: {
+            type: ObjectId,
+            requird: true,
+            ref: "Supplier"
+        }
     }
-
-    // createdAt: {
-    //     type: Date,
-    //     default: Date.now,
-    // },
-    // updatedAt: {
-    //     type: Date,
-    //     default: Date.now,
-    // },
-    // supplier: {
-    //     type: mongoose.Schema.Types.OnjectId,
-    //     ref: "Supplier"
-    // },
-    // categories: [{
-    //     name: {
-    //         type: String,
-    //         required: true
-    //     },
-    //     _id: {
-    //         type: mongoose.Schema.Types.OnjectId,
-    //     }
-    // }],
-
-
-
 
 }, { timestamps: true });
 
@@ -100,7 +127,7 @@ const productSchema = mongoose.Schema({
 
 // Mongoose Middlewares for saving data: pre / post
 
-productSchema.pre('save', function (next) {
+stockSchema.pre('save', function (next) {
     // this =>
     console.log("Before Saving Data");
     if (this.quantity === 0) {
@@ -110,7 +137,7 @@ productSchema.pre('save', function (next) {
     next();
 });
 
-productSchema.methods.logger = function () {
+stockSchema.methods.logger = function () {
     console.log(`Data Saved for ${this.name}`);
 }
 
@@ -118,8 +145,8 @@ productSchema.methods.logger = function () {
 
 // Add Model
 
-const Product = mongoose.model("Product", productSchema);
+const Stock = mongoose.model("Stock", stockSchema);
 
 
 
-module.exports = Product;
+module.exports = Stock;
