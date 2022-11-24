@@ -31,6 +31,12 @@ exports.getProducts = async (req, res, next) => {
             // fields=name,des,-_id
         }
 
+        if (req.query.limit) {
+            const limit = req.query.limit;
+            queries.limit = (limit * 1);
+          }
+        
+
         // {price:{$gt:50}}
 
         // gt, lt, gte, lte, ne
@@ -46,7 +52,7 @@ exports.getProducts = async (req, res, next) => {
         if (req.query.page){
 
             const {page = 1, limit= 10} = req.query;   //'3' '10'
-
+            queries.limit = limit;
             const skip = (page - 1) * parseInt(limit);
 
             queries.skip = skip
